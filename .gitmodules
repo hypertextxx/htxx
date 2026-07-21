@@ -1,0 +1,3 @@
+[submodule "idltool/webref"]
+	path = idltool/webref
+	url = https://github.com/w3c/webref.git

@@ -1,0 +1,12 @@
+cmake-build-*/
+build/
+.idea/
+.lvimrc
+.clangd
+.cache/
+idltool/node_modules/
+idltool/build/
+idltool/*.lock
+idltool/out/
+idltool/*-lock.json
+

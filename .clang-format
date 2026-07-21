@@ -1,0 +1,26 @@
+---
+BasedOnStyle: LLVM
+AccessModifierOffset: -4
+AlignAfterOpenBracket: DontAlign
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: Always
+BreakBeforeConceptDeclarations: Never
+AlwaysBreakTemplateDeclarations: No
+ColumnLimit: 120
+CompactNamespaces: true
+ContinuationIndentWidth: 8
+IndentWidth: 4
+InsertBraces: true
+InsertNewlineAtEOF: true
+LambdaBodyIndentation: OuterScope
+PenaltyBreakBeforeFirstCallParameter: 50
+PenaltyReturnTypeOnItsOwnLine: 4000
+PointerAlignment: Left
+RequiresClausePosition: WithPreceding
+SpaceBeforeCtorInitializerColon: false
+SpaceBeforeInheritanceColon: false
+SpaceInEmptyBlock: true
+TabWidth: 4
+KeepEmptyLinesAtEOF: true
+
