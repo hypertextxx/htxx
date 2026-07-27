@@ -10,8 +10,8 @@
 namespace ml {
 
 
-#include "htxx/_generated/aspects.def"
-#include "htxx/_generated/elements.def"
+#include "htxx/_generated/aspects.h"
+#include "htxx/_generated/elements.h"
 }
 
 

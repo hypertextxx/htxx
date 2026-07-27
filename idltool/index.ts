@@ -1,10 +1,10 @@
 import { writeFile } from "fs";
 
-import htmlJson from "./webref/ed/idlparsed/html.json" with { type: "json" };
-const htmlIdl = htmlJson.idlparsed;
-import elementJson from "./webref/ed/elements/html.json" with { type: "json" };
 import { makeCssPropertiesSection } from "./csstool.js";
-const htmlElementsRef = elementJson.elements;
+
+import elements from "@webref/elements";
+import idl from "./html.json" with { type: "json" };
+const htmlIdl = idl.idlparsed;
 
 const typeMap = {
     "boolean": "bool",
@@ -20,7 +20,9 @@ const typeMap = {
 const skipInterfaces = new Set(["HTMLTemplateElement"]);
 const skipElements = new Set([]);
 
-const htmlElements = htmlElementsRef.filter(el => !skipInterfaces.has(el.interface) && !skipElements.has(el.name))
+const htmlElements = Object.entries(await elements.listAll())
+    .flatMap(([name, data]) => (data as any).elements)
+    .filter(el => el.interface && !skipInterfaces.has(el.interface) && !skipElements.has(el.name) && el.interface.startsWith("HTML") && el.obsolete != true);
 
 interface Attribute {
     attrName: string
@@ -56,7 +58,7 @@ function makeAttrVariant(att) {
 
 function getDependencies(interfaceName: string): string[] {
     let toAdd = new Set<string>();
-    if (htmlIdl.idlNames[interfaceName]?.inheritance) {
+    if (htmlIdl.idlNames[interfaceName] && htmlIdl.idlNames[interfaceName].inheritance) {
         toAdd.add(htmlIdl.idlNames[interfaceName].inheritance);
     }
     htmlIdl.idlExtendedNames[interfaceName]?.forEach(ext => {
@@ -114,7 +116,7 @@ function makeElementSection(defs: IdlInterface[]) {
             elementSection += indent(`template <class ...A> struct `);
             // make this recurse
             elementSection += `[[=permit(${def.attributes.map(attr => `$${attr.attrName}`).join(", ")})]] `;
-            elementSection += `${tag}: virtual element<${tag}<A...>>`;
+            elementSection += `${tag}: element<${tag}<A...>>`;
             if (def.parents.length > 0 || def.includes.length > 0) {
                 elementSection += `, ${defs.filter(d => def.parents.includes(d.interfaceName) || def.includes.includes(d.interfaceName)).map(d => {
                     inheritedInterfaces.add(d);
@@ -169,8 +171,8 @@ console.log(`found ${defs.length} interfaces`);
 
 const outDir = process.argv.length >= 3 ? process.argv[2] : "out";
 
-writeFile(`${outDir}/aspects.def`, makeAttributeSpecSection(defs), () => { console.log("wrote aspects.def") });
-writeFile(`${outDir}/elements.def`, makeElementSection(defs), () => { console.log("wrote elements.def") });
+writeFile(`${outDir}/aspects.h`, makeAttributeSpecSection(defs), () => { console.log("wrote aspects.h") });
+writeFile(`${outDir}/elements.h`, makeElementSection(defs), () => { console.log("wrote elements.h") });
 
-makeCssPropertiesSection().then(c => writeFile(`${outDir}/style.def`, c, () => { console.log("wrote style.def") }));
+makeCssPropertiesSection().then(c => writeFile(`${outDir}/style.h`, c, () => { console.log("wrote style.h") }));
 

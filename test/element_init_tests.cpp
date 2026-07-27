@@ -1,4 +1,3 @@
-#include "htxx/idl_interface.h"
 #include "testing.h"
 #include <functional>
 #include <htxx/element.h>
@@ -7,6 +6,7 @@
 
 template <class ...A> struct test_element: element<test_element<A...>> {
     constexpr test_element(A ...a): test_element::element{ a... } { }
+    constexpr test_element() = default;
 };
 
 TEST(ElementInit) {
@@ -41,5 +41,4 @@ TEST(HtmlWithStyle) {
     std::println("{}", el);
     STATIC_EXPECT_TRUE(true);
 };
-
 

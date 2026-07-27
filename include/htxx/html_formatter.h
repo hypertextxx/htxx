@@ -41,7 +41,7 @@ template <html_element_type E> struct std::formatter<E> {
         template for (aspect_type auto& a : el.aspects()) {
             static constexpr std::meta::info gen_info = get_generator_info(dealias(^^std::decay_t<decltype(a)>));
             static constexpr std::meta::info value_type_or_template = dealias(extract<std::meta::info>(template_arguments_of(gen_info)[0]));
-            ctx.advance_to(std::format_to(ctx.out(), " {}=", [:gen_info:]::name()));
+            ctx.advance_to(std::format_to(ctx.out(), " {}=", [:gen_info:]::name().starts_with("_") ? [:gen_info:]::name().substr(1) : [:gen_info:]::name()));
             if constexpr (value_type_or_template == ^^std::string_view || value_type_or_template == ^^style) {
                 ctx.advance_to(std::format_to(ctx.out(), "\"{}\"", a.value));
             } else {

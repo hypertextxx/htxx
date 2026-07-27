@@ -40,10 +40,10 @@ template <class... A> struct with_aspects_impl {
         // back to doing it this way.
         [&]<std::size_t ...Is>(std::index_sequence<Is...>){
             ([&]<std::size_t I, class T>(){
-                constexpr auto a = ^^T;
+                static constexpr auto a = ^^T;
 
                 if constexpr (is_aspect_type(a)) {
-                    mems.push_back(std::meta::data_member_spec(a, { .name = aspect_name<typename[:a:]> }));
+                    mems.push_back(std::meta::data_member_spec(a, { .name = "_" + std::string{ aspect_name<typename[:a:]> } }));
                 } else if constexpr (is_type(a)) {
                     child_types.push_back(std::meta::data_member_spec(a, { .name = child_name<I, a>() }));
                 }

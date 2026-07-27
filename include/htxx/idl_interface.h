@@ -30,6 +30,7 @@ template <class ...A> struct style: element<style<A...>> {
 
 inline constexpr aspect_generator<^^style, "style"> $style;
 inline constexpr aspect_generator<^^std::string_view, "id"> $id;
+inline constexpr aspect_generator<^^std::string_view, "_class"> $class;
 
 #endif
 

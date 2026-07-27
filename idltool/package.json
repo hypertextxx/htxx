@@ -17,7 +17,8 @@
   },
   "dependencies": {
     "@webref/css": "^8.7.0",
-    "@webref/elements": "^2.4.0",
-    "@webref/idl": "^3.56.0"
+    "@webref/elements": "^2.7.1",
+    "@webref/idl": "^3.82.0",
+    "webidl2": "^24.5.0"
   }
 }

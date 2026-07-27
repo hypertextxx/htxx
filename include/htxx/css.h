@@ -5,7 +5,7 @@
 
 
 namespace css {
-#include "htxx/_generated/style.def"
+#include "htxx/_generated/style.h"
 };
 
 #endif
