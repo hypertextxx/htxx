@@ -29,7 +29,7 @@ export async function makeCssPropertiesSection() {
         const cssProp = prop as CssProperty;
         if (cssProp.name.startsWith("-")) continue;
         const cppName = cssProp.name.replace(/\-/g, "_");
-        cssPropSection += `[[=style_aspect]] inline constexpr aspect_generator<^^std::string_view, "${cssProp.name}"> $${cppName};\n`;
+        cssPropSection += `inline constexpr aspect_generator<^^std::string_view, "${cppName}", [][[=format_name("${cssProp.name}")]]{}> $${cppName};\n`;
     }
     return cssPropSection;
 }

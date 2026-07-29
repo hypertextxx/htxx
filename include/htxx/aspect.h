@@ -7,6 +7,7 @@
 
 template <class T, class Gen> struct aspect {
     using value_type = T;
+    using generator_type = Gen;
     value_type value;
 
     constexpr aspect(): value{ } { };
@@ -37,7 +38,13 @@ template <class T, class Gen> struct aspect {
     }
 };
 
-template <std::meta::info VTp, static_string Name> struct aspect_generator { 
+template <std::meta::info VTp, static_string Name, auto Tag = []{}> struct aspect_generator { 
+    static consteval auto meta_tag_call_operator() { return ^^decltype(Tag)::operator(); }
+ 
+    static consteval std::vector<std::meta::info> annotations() {
+        return std::meta::annotations_of(meta_tag_call_operator());
+    }
+
     template <class ...Args> constexpr decltype(auto) operator()(Args&& ...args) const {
         // fixed now, see gcc.gnu.org/bugzilla/show_bug.cgi?id=124706
         typename[:VTp:] r{ std::forward<Args>(args)... };
@@ -60,14 +67,14 @@ template <std::meta::info VTp, static_string Name> struct aspect_generator {
         if constexpr (is_template(VTp)) {
             return VTp;
         }
-        return substitute(^^aspect, { VTp, ^^aspect_generator<VTp, Name> });
+        return substitute(^^aspect, { VTp, ^^aspect_generator<VTp, Name, Tag> });
     }
     
     static constexpr std::string_view name() { return Name; }
     static consteval std::meta::info type_info() { return VTp; }
 
-    template <std::meta::info RVTp, static_string RName> constexpr auto operator==(const aspect_generator<RVTp, RName>&) const {
-        return RVTp == VTp && RName == Name;
+    template <std::meta::info RVTp, static_string RName, auto RTag> constexpr auto operator==(const aspect_generator<RVTp, RName, RTag>&) const {
+        return ^^decltype(Tag) == ^^decltype(RTag);
     }
 };
 
@@ -98,14 +105,21 @@ template <class ...Gen> struct permit {
     constexpr permit(Gen& ..._gens): gens{ ^^Gen... } { }
 };
 
-template <std::size_t N> struct format_as {
-    static_string<N> identifier;
-
-    constexpr format_as(const char (&_identifier)[N + 1]): identifier{ _identifier } { }
-};
-template <std::size_t N> format_as(const char (&_identifier)[N]) -> format_as<N - 1>;
-
 template <class T, aspect_gen_type Gen> struct impermissible_aspect { };
 
+struct format_name {
+    std::meta::info name;
+    consteval format_name(std::string_view _name): name{ std::meta::reflect_constant_string(_name) } { }
+};
+
+template <aspect_gen_type Gen> consteval std::meta::info aspect_format_name() {
+    // std::meta::annotations_of_with_type works with gcc but crashes clangd currently so
+    template for (constexpr auto ann : std::define_static_array(Gen::annotations())) {
+        if constexpr (remove_cvref(std::meta::type_of(ann)) == ^^format_name) {
+            return [:std::meta::constant_of(ann):].name;
+        }
+    }
+    return std::meta::reflect_constant_string(Gen::name());
+}
 #endif
 

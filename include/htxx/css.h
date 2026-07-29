@@ -3,7 +3,6 @@
 
 #include "idl_interface.h"
 
-
 namespace css {
 #include "htxx/_generated/style.h"
 };
